@@ -31,18 +31,23 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Classe pour les détails d'un/une acteur/Actrice
+ */
 public class PeopleActivity extends AppCompatActivity {
 
+    // Déclaration des items du layout
     private TextView tvBornWhere, tvBiography, tvName;
     private ImageView ivPhoto;
     private RecyclerView rvMovies;
 
+    // Déclarations des variables
     private List<ObjectImage> images = new ArrayList<>();
-
     private int peopleId;
+
+    // Déclaration d'un People, d'un PeopleImage et d'un PeopleMovie
     private People people;
     private PeopleImage peopleImage;
-    private PeopleMovie peopleMovie;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,7 @@ public class PeopleActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
 
+        // Initialisation des items du layout
         tvBiography = (TextView) findViewById(R.id.textView_biography);
         tvBornWhere = (TextView) findViewById(R.id.textView_bornWhere);
         tvName = (TextView) findViewById(R.id.textView_peopleName);
@@ -60,14 +66,19 @@ public class PeopleActivity extends AppCompatActivity {
 
         ivPhoto = (ImageView) findViewById(R.id.image_people);
 
+        // SI nous récupérons bien des paramètres venant de l'intent
         if(getIntent().getExtras() != null){
+            // Initialisation des variables en fonction des paramètres d'intent
             peopleId = getIntent().getExtras().getInt(Constant.INTENT_ID_PEOPLE);
+            // Création des urls
             String url = String.format(Constant.URL_PEOPLE, peopleId);
             String url2 = String.format(Constant.URL_PEOPLE_IMAGE, peopleId);
 
+            // Si nous sommes bien connectés à internet
             if(Network.isNetworkAvailable(PeopleActivity.this)){
                 RequestQueue queue = Volley.newRequestQueue(PeopleActivity.this);
 
+                // Création d'une première requête
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                         new Response.Listener<String>() {
                             @Override
@@ -75,13 +86,18 @@ public class PeopleActivity extends AppCompatActivity {
 
                                 Gson gson = new Gson();
 
+                                // Transformation de la réponse en format de la classe People
                                 people = gson.fromJson(response, People.class);
 
+                                // Modification des valeurs des items du layout
                                 tvBornWhere.setText("Born the " + people.getBirthday() + " in " + people.getPlace_of_birth());
                                 tvBiography.setText(people.getBiography());
                                 tvName.setText(people.getName());
 
-                                Picasso.with(PeopleActivity.this).load(String.format(Constant.URL_IMAGE, people.getProfile_path())).into(ivPhoto);
+                                // Si nous avons bien une url pour l'image de l'acteur/actrice
+                                if(people.getProfile_path() != null) {
+                                    Picasso.with(PeopleActivity.this).load(String.format(Constant.URL_IMAGE, people.getProfile_path())).into(ivPhoto);
+                                }
 
                             }
                         }, new Response.ErrorListener() {
@@ -91,6 +107,7 @@ public class PeopleActivity extends AppCompatActivity {
                     }
                 });
 
+                // Création de la deuxième requête
                 StringRequest stringRequest1 = new StringRequest(Request.Method.GET, url2,
                         new Response.Listener<String>() {
                             @Override
@@ -98,12 +115,15 @@ public class PeopleActivity extends AppCompatActivity {
 
                                 Gson gson = new Gson();
 
+                                // Transformation de la réponse en format de la classe PeopleImage
                                 peopleImage = gson.fromJson(response, PeopleImage.class);
 
+                                // Ajout des images dans la liste
                                 for (int i = 0 ; i < peopleImage.getProfiles().size() ; i++){
                                     images.add(new ObjectImage(String.format(Constant.URL_IMAGE_500, peopleImage.getProfiles().get(i).getFile_path())));
                                 }
 
+                                // Transformation du RecyclerVie selon la liste
                                 rvMovies.setLayoutManager(new LinearLayoutManager(PeopleActivity.this, LinearLayoutManager.HORIZONTAL, true));
                                 rvMovies.setAdapter(new ImageAdapter(images));
 
@@ -129,6 +149,11 @@ public class PeopleActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Gestion des boutons du menu de l'affichage
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 

@@ -31,15 +31,21 @@ import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+/**
+ * Classe permettant d'afficher le détail d'une sére TV
+ */
 public class TVActivity extends AppCompatActivity {
 
+    // Déclaration des items du layout
     private FloatingActionButton fabCredits, fabSeasons, fabVideos;
     private TextView tvReleaseTV, tvByTV, tvSummaryTV, tvGenreTV, tvNumberTV;
     private AppBarLayout ablPoster;
     private CollapsingToolbarLayout toolbarLayout;
 
+    // Déclaration des variables
     private int tvId;
 
+    // Déclaration d'une TV
     private TV tv;
 
     @Override
@@ -52,6 +58,7 @@ public class TVActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Initialisation des items du layout
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
 
         ablPoster = (AppBarLayout) findViewById(R.id.app_bar);
@@ -66,10 +73,14 @@ public class TVActivity extends AppCompatActivity {
         fabSeasons = (FloatingActionButton) findViewById(R.id.floating_seasons);
         fabVideos = (FloatingActionButton) findViewById(R.id.floating_videos);
 
+        // Si nous recevons des paramètres d'intent
         if (getIntent().getExtras() != null){
+            // Initialisation des variables en fonction des paramètres d'intent
             tvId = getIntent().getExtras().getInt(Constant.INTENT_ID_TV);
+            // Création de l'url
             String url = String.format(Constant.URL_TV, tvId);
 
+            // Si nous sommes bien connecté à internet
             if(Network.isNetworkAvailable(TVActivity.this)){
                 RequestQueue queue = Volley.newRequestQueue(TVActivity.this);
 
@@ -80,6 +91,7 @@ public class TVActivity extends AppCompatActivity {
 
                                 Gson gson = new Gson();
 
+                                // Trasnformation de la réponse en format de la classe TV
                                 tv = gson.fromJson(response, TV.class);
 
                                 String createdBy = "";
@@ -92,6 +104,7 @@ public class TVActivity extends AppCompatActivity {
                                     genres += tv.getGenres().get(j).getName() + " / ";
                                 }
 
+                                // Modification des valeurs des items du layout
                                 toolbarLayout.setTitle(tv.getName());
 
                                 tvReleaseTV.setText("Created : " + tv.getFirst_air_date());
@@ -104,9 +117,7 @@ public class TVActivity extends AppCompatActivity {
                                     Picasso.with(TVActivity.this).load(String.format(Constant.URL_IMAGE_500, tv.getBackdrop_path())).into(new Target() {
                                         @Override
                                         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                                                ablPoster.setBackground(new BitmapDrawable(TVActivity.this.getResources(), bitmap));
-                                            }
+                                            ablPoster.setBackground(new BitmapDrawable(TVActivity.this.getResources(), bitmap));
                                         }
 
                                         @Override
@@ -121,11 +132,9 @@ public class TVActivity extends AppCompatActivity {
                                     });
                                 }
 
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    getWindow().setStatusBarColor(Color.TRANSPARENT);
-                                }
+                                getWindow().setStatusBarColor(Color.TRANSPARENT);
 
-
+                                // Gestion de l'appuie sur le bouton pour afficher les crédit de la série
                                 fabCredits.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -140,6 +149,7 @@ public class TVActivity extends AppCompatActivity {
                                     }
                                 });
 
+                                // Gestion de l'appuie sur le bouton pour afficher les vidéos de la série
                                 fabVideos.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -152,6 +162,7 @@ public class TVActivity extends AppCompatActivity {
                                     }
                                 });
 
+                                // Gestion de l'appuie sur le bouton pour afficher les saisons de la série
                                 fabSeasons.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -177,6 +188,11 @@ public class TVActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Gestion des boutons du menu de l'affichage
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 

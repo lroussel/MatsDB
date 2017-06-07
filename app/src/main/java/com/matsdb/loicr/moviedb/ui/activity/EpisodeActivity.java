@@ -33,13 +33,22 @@ import com.squareup.picasso.Target;
 
 public class EpisodeActivity extends AppCompatActivity {
 
+    /**
+     * Déclaration des items du layout
+     */
     private TextView tvRelease, tvNumEp, tvSummary;
     private AppBarLayout ablPoster;
     private CollapsingToolbarLayout toolbarLayout;
     private FloatingActionButton fabCredit, fabVideos;
 
+    /**
+     * Déclaration de variables
+     */
     private int tvId, numSeason, numEp;
 
+    /**
+     * Déclaration d'un Episode
+     */
     private Episode episode;
 
     @Override
@@ -52,6 +61,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Initialisation des items du layout
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
 
         ablPoster = (AppBarLayout) findViewById(R.id.app_bar);
@@ -62,16 +72,22 @@ public class EpisodeActivity extends AppCompatActivity {
 
         fabCredit = (FloatingActionButton) findViewById(R.id.floating_cast);
         fabVideos = (FloatingActionButton) findViewById(R.id.floating_videos);
+        // Fin Initialisation
 
+        // Si des Intents sont à récupérer
         if(getIntent().getExtras() != null){
+            // Initialisation des variables en fonction des Intents
             tvId = getIntent().getExtras().getInt(Constant.INTENT_ID_TV);
             numSeason = getIntent().getExtras().getInt(Constant.INTENT_NUM_SEASON);
             numEp = getIntent().getExtras().getInt(Constant.INTENT_NUM_EPISODE);
+            // Initialisation de l'url
             String url = String.format(Constant.URL_TV_EPISODE, tvId, numSeason, numEp);
 
+            // Si nous sommes bien connecté à Internet
             if (Network.isNetworkAvailable(EpisodeActivity.this)){
                 RequestQueue requestQueue = Volley.newRequestQueue(EpisodeActivity.this);
 
+                // Création de la requête en fonction de l'URL
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                         new Response.Listener<String>() {
                             @Override
@@ -79,21 +95,22 @@ public class EpisodeActivity extends AppCompatActivity {
 
                                 Gson gson = new Gson();
 
+                                // Transformation de la réponse en un épisode
                                 episode = gson.fromJson(response, Episode.class);
 
+                                // Modification des items du layout
                                 toolbarLayout.setTitle(episode.getName());
 
                                 tvRelease.setText("Release date " + episode.getAir_date());
-                                tvNumEp.setText("Saison " + episode.getSeason_number() + " - Episode " + episode.getEpisode_number());
+                                tvNumEp.setText("Season " + episode.getSeason_number() + " - Episode " + episode.getEpisode_number());
                                 tvSummary.setText(episode.getOverview());
 
+                                // On vérifie si nous avons bien une URL pour l'image, pour éviter une erreur
                                 if(episode.getStill_path() != null){
                                     Picasso.with(EpisodeActivity.this).load(String.format(Constant.URL_IMAGE_500, episode.getStill_path())).into(new Target() {
                                         @Override
                                         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                                                ablPoster.setBackground(new BitmapDrawable(EpisodeActivity.this.getResources(), bitmap));
-                                            }
+                                            ablPoster.setBackground(new BitmapDrawable(EpisodeActivity.this.getResources(), bitmap));
                                         }
 
                                         @Override
@@ -108,13 +125,14 @@ public class EpisodeActivity extends AppCompatActivity {
                                     });
                                 }
 
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    getWindow().setStatusBarColor(Color.TRANSPARENT);
-                                }
+                                // On enlève la couleur de la barre des tâches pour un apercu plus propre
+                                getWindow().setStatusBarColor(Color.TRANSPARENT);
 
+                                // Déclaration des Listeners en cas de click sur un des boutons flotant
                                 fabCredit.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
+                                        // Création d'un intent pour voir les crédit d'un épisode
                                         Intent it_credit = new Intent(EpisodeActivity.this, CreditTVActivity.class);
                                         Bundle bundle = new Bundle();
                                         bundle.putInt(Constant.INTENT_ID_TV, tvId);
@@ -129,6 +147,7 @@ public class EpisodeActivity extends AppCompatActivity {
                                 fabVideos.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
+                                        // Création d'un intent pour voir les vidéos d'un épisode
                                         Intent it_videos = new Intent(EpisodeActivity.this, VideosActivity.class);
                                         Bundle bundle1 = new Bundle();
                                         bundle1.putInt(Constant.INTENT_ID_TV, tvId);
@@ -145,16 +164,23 @@ public class EpisodeActivity extends AppCompatActivity {
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        // Affichage des erreurs si erreur existe
                         Log.d("errors", error.toString());
                     }
                 });
 
+                // Ajout de notre requete pour l'effectuer
                 requestQueue.add(stringRequest);
             }
         }
 
     }
 
+    /**
+     * Gestion des boutons du menu de l'affichage
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 

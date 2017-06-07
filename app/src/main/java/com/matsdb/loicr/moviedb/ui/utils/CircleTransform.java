@@ -8,7 +8,7 @@ import android.graphics.Paint;
 import com.squareup.picasso.Transformation;
 
 /**
- * Created by loicr on 24/05/2017.
+ * Classe permettant de transformer des images en cercles
  */
 
 public class CircleTransform implements Transformation {

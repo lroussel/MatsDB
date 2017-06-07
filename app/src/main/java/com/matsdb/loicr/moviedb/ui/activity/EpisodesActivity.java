@@ -23,12 +23,18 @@ import com.matsdb.loicr.moviedb.ui.utils.Constant;
 import com.matsdb.loicr.moviedb.ui.utils.Network;
 import com.google.gson.Gson;
 
+/**
+ * Classe permettant de voir la liste des épisodes d'une saison d'une série
+ */
 public class EpisodesActivity extends AppCompatActivity {
 
+    // Déclaration des items du layout
     private ListView lvEpisodes;
 
+    // Déclaration des variable nécessaires
     private int tvId, numSeason;
 
+    // Déclaration d'une Saison
     private Season season;
 
     @Override
@@ -38,16 +44,22 @@ public class EpisodesActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Initialisation des items du layout
         lvEpisodes = (ListView) findViewById(R.id.listView_episodes);
 
+        // Si nous avons bien des Intents à récupérer
         if(getIntent().getExtras() != null){
+            // Initialisation des variables en fonction des intents récupéré
             tvId = getIntent().getExtras().getInt(Constant.INTENT_ID_TV);
             numSeason = getIntent().getExtras().getInt(Constant.INTENT_NUM_SEASON);
+            // Création de l'url permettant de récupérer la liste des épisodes
             String url = String.format(Constant.URL_TV_SEASON, tvId, numSeason);
 
+            // Si le mobile est bien connecté à internet
             if (Network.isNetworkAvailable(EpisodesActivity.this)){
                 RequestQueue queue = Volley.newRequestQueue(EpisodesActivity.this);
 
+                // Création de la requête
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                         new Response.Listener<String>() {
                             @Override
@@ -55,19 +67,24 @@ public class EpisodesActivity extends AppCompatActivity {
 
                                 Gson gson = new Gson();
 
+                                // Transformation de la réponse en une saison
                                 season = gson.fromJson(response, Season.class);
 
+                                // Modification des items du layout
                                 getSupportActionBar().setTitle(season.getName());
 
+                                // Transformation de la liste des épisode en fonction de l'adapter donné et des épisodes
                                 lvEpisodes.setAdapter(new ListEpisodesAdapter(
                                         EpisodesActivity.this,
                                         R.layout.adapter_list_episodes,
                                         season.getEpisodes()
                                 ));
 
+                                // Gestion du click sur un item de la liste créée précédemment
                                 lvEpisodes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                        // Creation d'un intent pour voir le détail de l'episode choisi
                                         Intent it_episode = new Intent(EpisodesActivity.this, EpisodeActivity.class);
                                         Bundle bundle = new Bundle();
                                         bundle.putInt(Constant.INTENT_ID_TV, tvId);
@@ -99,6 +116,11 @@ public class EpisodesActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Gestion des boutons du menu de l'affichage
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -107,6 +129,7 @@ public class EpisodesActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.action_credits:
+                // Création de l'intent pour les crédit de la saison
                 Intent it_credit = new Intent(EpisodesActivity.this, CreditTVActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt(Constant.INTENT_ID_TV, tvId);
@@ -117,6 +140,7 @@ public class EpisodesActivity extends AppCompatActivity {
                 startActivity(it_credit);
                 break;
             case R.id.action_video:
+                // Création de l'intent pour les vidéos de la saison
                 Intent it_videos = new Intent(EpisodesActivity.this, VideosActivity.class);
                 Bundle bundle1 = new Bundle();
                 bundle1.putInt(Constant.INTENT_ID_TV, tvId);

@@ -24,15 +24,19 @@ import com.matsdb.loicr.moviedb.ui.utils.Constant;
 import com.matsdb.loicr.moviedb.ui.utils.Network;
 import com.google.gson.Gson;
 
+/**
+ * Classe permettant l'affichage des film similaire
+ */
 public class SimilarMovieActivity extends AppCompatActivity {
 
+    // Déclaration d'un Similar
     private Similar similar;
 
-    private int movieId;
+    // Déclaration des variables
+    private int movieId, numPage, nbPages;
 
+    // Déclaration des items du layout
     private ListView lvSimilar;
-    private int numPage, nbPages;
-
     private Button btPrevious, btNext;
     private TextView tvPagination;
 
@@ -44,19 +48,25 @@ public class SimilarMovieActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Similar Movie");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Initialisation des items du layout
         lvSimilar = (ListView) findViewById(R.id.listView_similarMovie);
         btPrevious = (Button) findViewById(R.id.button_previous);
         btNext = (Button) findViewById(R.id.button_next);
         tvPagination = (TextView) findViewById(R.id.textView_Pagination);
 
+        // Si nous recevons des paramètres d'intent
         if(getIntent().getExtras() != null){
+            // Initialisation des variables en fonction des paramètres d'intent
             numPage = getIntent().getExtras().getInt(Constant.INTENT_NUM_PAGE);
             movieId = getIntent().getExtras().getInt(Constant.INTENT_ID_MOVIE);
+            // Création de l'url
             String url = String.format(Constant.URL_SIMILAR_MOVIE, movieId, numPage);
 
+            // Si nous sommes bien connecté à internet
             if(Network.isNetworkAvailable(SimilarMovieActivity.this)){
                 RequestQueue queue = Volley.newRequestQueue(SimilarMovieActivity.this);
 
+                // Création de la requête
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                         new Response.Listener<String>() {
                             @Override
@@ -64,8 +74,10 @@ public class SimilarMovieActivity extends AppCompatActivity {
 
                                 Gson gson = new Gson();
 
+                                // Transformation de la réponse en format de la classe Similar
                                 similar = gson.fromJson(response, Similar.class);
 
+                                // Gestion de la pagination
                                 nbPages = similar.getTotal_pages();
 
                                 tvPagination.setText(numPage + " / " + nbPages);
@@ -77,6 +89,7 @@ public class SimilarMovieActivity extends AppCompatActivity {
                                     btPrevious.setEnabled(true);
                                 }
 
+                                // Gestion de redirection vers la page suivante
                                 btNext.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -90,6 +103,7 @@ public class SimilarMovieActivity extends AppCompatActivity {
                                         finish();
                                     }
                                 });
+                                // Gestion de redirection vers la page précédente
                                 btPrevious.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -104,16 +118,18 @@ public class SimilarMovieActivity extends AppCompatActivity {
                                     }
                                 });
 
+                                // Initialisation de la listView en fonction de l'adapter et de la liste des résultats
                                 lvSimilar.setAdapter(new ListMovieAdapter(
                                         SimilarMovieActivity.this,
                                         R.layout.adapter_list_search_movie,
                                         similar.getResults()
                                 ));
 
+                                // Gestion de l'appuie sur un film de la liste
                                 lvSimilar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                                        // Création de l'intent pour afficher le détail du film choisi
                                         Intent it_movie = new Intent(SimilarMovieActivity.this, MovieActivity.class);
                                         Bundle bundle = new Bundle();
                                         bundle.putInt(Constant.INTENT_ID_MOVIE, similar.getResults().get(position).getId());
@@ -136,6 +152,11 @@ public class SimilarMovieActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Gestion des boutons du menu de l'affichage
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 

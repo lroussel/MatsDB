@@ -24,15 +24,21 @@ import com.matsdb.loicr.moviedb.ui.utils.Constant;
 import com.matsdb.loicr.moviedb.ui.utils.Network;
 import com.google.gson.Gson;
 
+/**
+ * Classe permettant l'affichage de la liste des film les mieux notés
+ */
 public class TopRatedMovieActivity extends AppCompatActivity {
 
+    // Déclaration d'un SearchMovie
     private SearchMovie movies;
 
-    private ListView lvTopRated;
-    private int numPage, nbPages;
-
+    // Déclaration des items du layout
     private Button btPrevious, btNext;
     private TextView tvPagination;
+    private ListView lvTopRated;
+
+    // Déclaration des variables
+    private int numPage, nbPages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,18 +48,24 @@ public class TopRatedMovieActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Best Movie");
 
+        // Initialisation des items du layout
         lvTopRated = (ListView) findViewById(R.id.listView_TopRatedMovie);
         btPrevious = (Button) findViewById(R.id.button_previous);
         btNext = (Button) findViewById(R.id.button_next);
         tvPagination = (TextView) findViewById(R.id.textView_Pagination);
 
+        // Si nous recevons des paramètres d'intent
         if(getIntent().getExtras() != null) {
+            // Initialisation des variables en fonction des paramètres d'intent
             numPage = getIntent().getExtras().getInt(Constant.INTENT_NUM_PAGE);
+            // Création de l'url
             String url = String.format(Constant.URL_TOPRATED_MOVIE, numPage);
 
+            // Si nous sommes bien connecté à internet
             if (Network.isNetworkAvailable(TopRatedMovieActivity.this)) {
                 RequestQueue queue = Volley.newRequestQueue(TopRatedMovieActivity.this);
 
+                // Création de la requête
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                         new Response.Listener<String>() {
                             @Override
@@ -61,8 +73,10 @@ public class TopRatedMovieActivity extends AppCompatActivity {
 
                                 Gson gson = new Gson();
 
+                                // Transformation de la réponse en format de la classe SearchMovie
                                 movies = gson.fromJson(response, SearchMovie.class);
 
+                                // Gestion de la pagination
                                 nbPages = movies.getTotal_pages();
 
                                 tvPagination.setText(numPage + " / " + nbPages);
@@ -74,6 +88,7 @@ public class TopRatedMovieActivity extends AppCompatActivity {
                                     btPrevious.setEnabled(true);
                                 }
 
+                                // Gestion de la redirection vers la page suivante
                                 btNext.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -86,6 +101,7 @@ public class TopRatedMovieActivity extends AppCompatActivity {
                                         finish();
                                     }
                                 });
+                                // Gestion de la redirection vers la page précédente
                                 btPrevious.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -99,16 +115,18 @@ public class TopRatedMovieActivity extends AppCompatActivity {
                                     }
                                 });
 
+                                // Initialisation de la listView en fonction de l'adapter et de la liste de films
                                 lvTopRated.setAdapter(new ListMovieAdapter(
                                         TopRatedMovieActivity.this,
                                         R.layout.adapter_list_search_movie,
                                         movies.getResults()
                                 ));
 
+                                // Gestion de l'appuie sur un film de la listView
                                 lvTopRated.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                                        // Création de l'intent pour voir le détail du film choisi
                                         Intent it_movie = new Intent(TopRatedMovieActivity.this, MovieActivity.class);
                                         Bundle bundle = new Bundle();
                                         bundle.putInt(Constant.INTENT_ID_MOVIE, movies.getResults().get(position).getId());
@@ -131,6 +149,11 @@ public class TopRatedMovieActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Gestion des boutons du menu de l'affichage
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 

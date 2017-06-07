@@ -1,7 +1,7 @@
 package com.matsdb.loicr.moviedb.ui.utils;
 
 /**
- * Created by loicr on 24/05/2017.
+ * Classe contenant toutes les constante utilisées
  */
 
 public class Constant {
@@ -19,12 +19,11 @@ public class Constant {
     public static final String INTENT_NUM_SEASON = "INTENT_NUM_SEASON";
     public static final String INTENT_NUM_EPISODE = "INTENT_NUM_EPISODE";
 
-
     // Premiere variable = type ; 2e variable = search ; 3e variable = page
     public static final String URL_SEARCH = "https://api.themoviedb.org/3/search/%s?api_key=0b1ff33e0342b12f4621bf7c403996e8&language=en-US&query=%s&page=%s&include_adult=false";
 
     /**
-     * URLS Images / youtube
+     * URLs Images / youtube
      */
     public static final String URL_IMAGE = "https://image.tmdb.org/t/p/w185%s";
     public static final String URL_IMAGE_500 = "https://image.tmdb.org/t/p/w500%s";

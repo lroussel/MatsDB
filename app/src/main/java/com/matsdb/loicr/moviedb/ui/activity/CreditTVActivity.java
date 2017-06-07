@@ -18,6 +18,9 @@ import com.matsdb.loicr.moviedb.ui.fragment.CrewTVFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Classe pour les informations sur le casting et l'équipe d'une série TV
+ */
 public class CreditTVActivity extends AppCompatActivity {
 
     /**
@@ -58,7 +61,6 @@ public class CreditTVActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-
     }
 
     @Override
@@ -88,6 +90,7 @@ public class CreditTVActivity extends AppCompatActivity {
     private void setmViewPager(ViewPager viewPager){
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
+        // Ajout des fragments
         adapter.addFrament(new CastTVFragment(), "Cast");
         adapter.addFrament(new CrewTVFragment(), "Crew");
         viewPager.setAdapter(adapter);
@@ -99,28 +102,54 @@ public class CreditTVActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+        /**
+         * Liste des fragments et de leurs titres
+         */
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
+        /**
+         * Constructeur
+         * @param fm
+         */
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
+        /**
+         * Retourne un fragment de la liste en fonction de la position
+         * @param position
+         * @return
+         */
         @Override
         public Fragment getItem(int position) {
             return mFragmentList.get(position);
         }
 
+        /**
+         * Retourne le nombre de fragments existant
+         * @return
+         */
         @Override
         public int getCount() {
             return mFragmentList.size();
         }
 
+        /**
+         * Ajoute un Fragment
+         * @param fragment
+         * @param title
+         */
         public void addFrament(Fragment fragment, String title){
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }
 
+        /**
+         * Retourne le nom d'un fragment en fonction de la position
+         * @param position
+         * @return
+         */
         @Override
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);

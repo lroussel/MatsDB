@@ -9,7 +9,7 @@ import android.content.DialogInterface.OnClickListener;
 import com.matsdb.loicr.moviedb.R;
 
 /**
- * Created by loicr on 24/05/2017.
+ * Classe permettant d'afficher un dialog avec des réponses possibles
  */
 
 public class FastDialog {

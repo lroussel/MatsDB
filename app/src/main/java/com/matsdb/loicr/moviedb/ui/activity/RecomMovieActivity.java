@@ -24,15 +24,19 @@ import com.matsdb.loicr.moviedb.ui.utils.Constant;
 import com.matsdb.loicr.moviedb.ui.utils.Network;
 import com.google.gson.Gson;
 
+/**
+ * CLasse permettant d'afficher la liste des films recommandé
+ */
 public class RecomMovieActivity extends AppCompatActivity {
 
+    // Déclarations des recommandations
     private Recommendations recommendations;
 
-    private int movieId;
+    // Déclarations des variables
+    private int movieId, numPage, nbPages;
 
+    // Déclaration des itemsdu layout
     private ListView lvRecom;
-    private int numPage, nbPages;
-
     private Button btPrevious, btNext;
     private TextView tvPagination;
 
@@ -44,19 +48,25 @@ public class RecomMovieActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Recommendations");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Initialisation des items du layout
         lvRecom = (ListView) findViewById(R.id.listView_movieRecom);
         btPrevious = (Button) findViewById(R.id.button_previous);
         btNext = (Button) findViewById(R.id.button_next);
         tvPagination = (TextView) findViewById(R.id.textView_Pagination);
 
+        // Si nous recevons des paramètres d'intent
         if(getIntent().getExtras() != null){
+            // Initialisation des variables en fonction des paramètres d'intent
             movieId = getIntent().getExtras().getInt(Constant.INTENT_ID_MOVIE);
             numPage = getIntent().getExtras().getInt(Constant.INTENT_NUM_PAGE);
+            // Création de l'url
             String url = String.format(Constant.URL_RECOM_MOVIE, movieId, numPage);
 
+            // Si nous sommes bienconnecté à internet
             if(Network.isNetworkAvailable(RecomMovieActivity.this)){
                 RequestQueue queue = Volley.newRequestQueue(RecomMovieActivity.this);
 
+                // Création de la requête
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                         new Response.Listener<String>() {
                             @Override
@@ -64,8 +74,10 @@ public class RecomMovieActivity extends AppCompatActivity {
 
                                 Gson gson = new Gson();
 
+                                // Transformation de la réponse en format de la classe Recommendations
                                 recommendations = gson.fromJson(response, Recommendations.class);
 
+                                // Gestion de la pagination
                                 nbPages = recommendations.getTotal_pages();
 
                                 tvPagination.setText(numPage + " / " + nbPages);
@@ -77,6 +89,7 @@ public class RecomMovieActivity extends AppCompatActivity {
                                     btPrevious.setEnabled(true);
                                 }
 
+                                // Gestion de la redirection sur la page suivante
                                 btNext.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -90,6 +103,7 @@ public class RecomMovieActivity extends AppCompatActivity {
                                         finish();
                                     }
                                 });
+                                // Gestion de la redirection vers la page précédente
                                 btPrevious.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -104,16 +118,18 @@ public class RecomMovieActivity extends AppCompatActivity {
                                     }
                                 });
 
+                                // Initialisation de la listView en fonction de l'adapter et de la liste des films
                                 lvRecom.setAdapter(new ListMovieAdapter(
                                         RecomMovieActivity.this,
                                         R.layout.adapter_list_search_movie,
                                         recommendations.getResults()
                                 ));
 
+                                // Gestion de l'appuie sur un des items de la liste
                                 lvRecom.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                                        // Création de l'intent pour le détail du film choisi
                                         Intent it_movie = new Intent(RecomMovieActivity.this, MovieActivity.class);
                                         Bundle bundle = new Bundle();
                                         bundle.putInt(Constant.INTENT_ID_MOVIE, recommendations.getResults().get(position).getId());
@@ -136,6 +152,11 @@ public class RecomMovieActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Gestion des boutons du menu de l'affichage
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 

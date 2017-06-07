@@ -6,7 +6,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 
 /**
- * Created by loicr on 24/05/2017.
+ * Classe permettant de vérifier la connexion à internet
  */
 
 public class Network {
@@ -14,26 +14,12 @@ public class Network {
     public static boolean isNetworkAvailable(Context context){
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            android.net.Network[] networks = connectivityManager.getAllNetworks();
-            NetworkInfo networkInfo;
-            for (android.net.Network mNetwork : networks){
-                networkInfo = connectivityManager.getNetworkInfo(mNetwork);
-                if(networkInfo.getState().equals(NetworkInfo.State.CONNECTED)){
-                    return true;
-                }
-            }
-        } else {
-            if(connectivityManager != null){
-                NetworkInfo[] info = connectivityManager.getAllNetworkInfo();
-
-                if(info != null){
-                    for (NetworkInfo anInfo : info){
-                        if(anInfo.getState() == NetworkInfo.State.CONNECTED){
-                            return true;
-                        }
-                    }
-                }
+        android.net.Network[] networks = connectivityManager.getAllNetworks();
+        NetworkInfo networkInfo;
+        for (android.net.Network mNetwork : networks){
+            networkInfo = connectivityManager.getNetworkInfo(mNetwork);
+            if(networkInfo.getState().equals(NetworkInfo.State.CONNECTED)){
+                return true;
             }
         }
 

@@ -23,12 +23,19 @@ import com.matsdb.loicr.moviedb.ui.utils.Constant;
 import com.matsdb.loicr.moviedb.ui.utils.Network;
 import com.google.gson.Gson;
 
+/**
+ * Classe permettant l'affichage des vidéos
+ */
 public class VideosActivity extends AppCompatActivity {
 
+    // Déclaration des items du layout
     private ListView lvVideos;
+
+    // Déclaration des variables
     private int movieId, numEpisode, numSeason;
     private String url = "";
 
+    // Déclaration d'une video
     private Videos videos;
 
     @Override
@@ -39,14 +46,19 @@ public class VideosActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Video");
 
+        // Initialisation des items du layout
         lvVideos = (ListView) findViewById(R.id.listView_videos);
 
+        // Si nous recevons des paramètres d'intent
         if(getIntent().getExtras() != null){
             String type = getIntent().getExtras().getString(Constant.INTENT_TYPE_VIDEO);
+            // Le lien sera différent pour un film ou pour une série
             if(type.equals("movie")) {
+                // Si c'est un film
                 movieId = getIntent().getExtras().getInt(Constant.INTENT_ID_MOVIE);
                 url = String.format(Constant.URL_VIDEO_MOVIE, movieId);
             }else if(type.equals("tv")){
+                // Si c'est une série
                 movieId = getIntent().getExtras().getInt(Constant.INTENT_ID_TV);
                 numSeason = getIntent().getExtras().getInt(Constant.INTENT_NUM_SEASON);
                 numEpisode = getIntent().getExtras().getInt(Constant.INTENT_NUM_EPISODE);
@@ -60,6 +72,7 @@ public class VideosActivity extends AppCompatActivity {
                 }
             }
 
+            // Si nous sommes bien connectés à internet
             if (Network.isNetworkAvailable(VideosActivity.this)){
                 RequestQueue queue = Volley.newRequestQueue(VideosActivity.this);
 
@@ -70,17 +83,21 @@ public class VideosActivity extends AppCompatActivity {
 
                                 Gson gson = new Gson();
 
+                                // Transformation de la réponse en format de la classe VIdeos
                                 videos = gson.fromJson(response, Videos.class);
 
+                                // Initialisation de la listView en fonction de l'adapter et de la liste des vidéos
                                 lvVideos.setAdapter(new ListVideosAdapter(
                                         VideosActivity.this,
                                         R.layout.adapter_list_videos,
                                         videos.getResults()
                                 ));
 
+                                // Gestion de l'appuie sur l'une des vidéos de la listView
                                 lvVideos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                        // Ouvre la vidéo sur youtube
                                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube://" + videos.getResults().get(position).getKey())));
                                     }
                                 });
@@ -98,6 +115,11 @@ public class VideosActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Gestion des boutons du menu de l'affichage
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
