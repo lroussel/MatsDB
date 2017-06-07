@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.matsdb.loicr.moviedb.ui.activity.SearchActivity">
+    <item
+        android:id="@+id/action_popular"
+        android:orderInCategory="100"
+        android:title="Popular"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_topRated"
+        android:orderInCategory="100"
+        android:title="Top Rated"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_onTheAir"
+        android:orderInCategory="100"
+        android:title="On the Air"
+        app:showAsAction="never" />
+</menu>
