@@ -3,6 +3,7 @@ package com.matsdb.loicr.moviedb.ui.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,6 +14,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.matsdb.loicr.moviedb.R;
 import com.matsdb.loicr.moviedb.ui.utils.Constant;
 
@@ -26,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btSearch;
     private Spinner spTypeSearch;
 
+    private InterstitialAd interstitialAd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +42,28 @@ public class MainActivity extends AppCompatActivity {
         etSearch = (EditText) findViewById(R.id.editText_search);
         btSearch = (Button) findViewById(R.id.button_search);
         spTypeSearch = (Spinner) findViewById(R.id.spinner_typeSearch);
+
+        MobileAds.initialize(this, "ca-app-pub-5446132358994347~6011375912");
+
+        interstitialAd = new InterstitialAd(this);
+        interstitialAd.setAdUnitId("ca-app-pub-5446132358994347/7488109117");
+
+        final AdRequest.Builder adRequestBuilder = new AdRequest.Builder();
+
+        interstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+                interstitialAd.loadAd(adRequestBuilder.build());
+            }
+
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+            }
+        });
+
+        interstitialAd.loadAd(adRequestBuilder.build());
 
         // Création de la liste déroulante du type de recherche avec un tableau de string
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.type_search, android.R.layout.simple_spinner_item);
@@ -48,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 boolean handled = false;
                 if(actionId == EditorInfo.IME_ACTION_SEARCH){
                     // Création de l'intent pour afficher la recherche
-                    Intent it_search = new Intent(MainActivity.this, SearchActivity.class);
+                    final Intent it_search = new Intent(MainActivity.this, SearchActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putString(Constant.INTENT_SEARCH, etSearch.getText().toString());
                     bundle.putInt(Constant.INTENT_NUM_PAGE, 1);
@@ -63,7 +92,13 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     it_search.putExtras(bundle);
-                    startActivity(it_search);
+
+                    if(interstitialAd.isLoaded()){
+                        interstitialAd.show();
+                        //startActivity(it_search);
+                    }else {
+                        Log.d("TAGsssss", "the interstitial wasn't loaded yet");
+                    }
 
                     handled = true;
                 }
@@ -77,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Création de l'intent pour afficher la recherche
-                Intent it_search = new Intent(MainActivity.this, SearchActivity.class);
+                final Intent it_search = new Intent(MainActivity.this, SearchActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString(Constant.INTENT_SEARCH, etSearch.getText().toString());
                 bundle.putInt(Constant.INTENT_NUM_PAGE, 1);
@@ -92,7 +127,15 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 it_search.putExtras(bundle);
-                startActivity(it_search);
+
+                if(interstitialAd.isLoaded()){
+                    interstitialAd.show();
+                    //startActivity(it_search);
+                }else {
+                    Log.d("TAGsssss", "the interstitial wasn't loaded yet");
+                }
+
+
             }
         });
 

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "860677985539",
+    "firebase_url": "https://striking-arbor-166013.firebaseio.com",
+    "project_id": "striking-arbor-166013",
+    "storage_bucket": "striking-arbor-166013.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:860677985539:android:4a9bc30e7b0d9692",
+        "android_client_info": {
+          "package_name": "com.matsdb.loicr.moviedb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "860677985539-bt601hlec4fbaevam3ej5prq9mcb0u9f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPbnirFksYO-vI2LRsxU1jndP96rsk08o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
